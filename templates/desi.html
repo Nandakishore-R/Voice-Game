@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speech Support for Kids</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 1em 0;
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            text-align: center;
+        }
+
+        nav li {
+            display: inline;
+            margin: 0 10px;
+        }
+
+        main {
+            padding: 20px;
+        }
+
+        .featured-content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .content-block {
+            text-align: center;
+            margin-bottom: 20px;
+            width: 25%; /* Set equal width for each content block */
+        }
+
+        .content-block img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        footer {
+            text-align: center;
+            background-color: #e48181;
+            color: white;
+            padding: 10px 0;
+        }
+
+        body, h1, h2, p {
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Apply a background color and basic font styles */
+        body {
+            background-image: url("https://www.thefutureperfect.com/wp-content/uploads/2019/11/F_8076_C0621_W24.jpg");
+            background-repeat: no-repeat;
+            background-size: cover;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Style the header */
+        header {
+            background-color: #cf86b4;
+            color: #fff;
+            padding: 20px 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo img {
+            width: 60px;
+        }
+
+        nav ul {
+            list-style: none;
+        }
+
+        nav ul li {
+            display: inline;
+            margin-right: 20px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #fff;
+        }
+
+        /* Style the main content */
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 40px 0;
+        }
+
+        .hero img {
+            max-width: 100%;
+        }
+
+        .hero h2 {
+            font-size: 28px;
+            margin-top: 10px;
+        }
+
+        .hero p {
+            font-size: 18px;
+            margin-top: 10px;
+            color: #555;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #e74c3c;
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        /* Style the featured content section */
+        .featured-content {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .content-block {
+            flex: 0 0 calc(33.33% - 20px);
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .content-block img {
+            max-width: 100%;
+        }
+
+        .content-block h3 {
+            margin-top: 10px;
+            font-size: 20px;
+        }
+
+        .content-block p {
+            font-size: 16px;
+            color: #777;
+            margin-top: 10px;
+        }
+
+        .content-block a {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        /* Style the footer */
+        footer {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        footer ul {
+            list-style: none;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <!-- <nav>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/desi">About Us</a></li>
+                <li><a href="/desi">Contact Us</a></li>
+            </ul>
+        </nav> -->
+    </header>
+
+    <main>
+        <section class="hero">
+            <!-- Your hero section content goes here -->
+        </section>
+
+        <section class="featured-content">
+            <div class="content-block">
+                <img src="{{ url_for('static', filename='gif_home.gif') }}" alt="Speech Therapy">
+                <h3>What is speech therapy?</h3>
+                <p>Speech therapy is treatment that improves your ability to talk and use other language skills. It helps you express your thoughts and understand what other people are saying to you. 
+                    It can also improve skills like your memory and ability to solve problems.</p>
+            </div>
+
+            <div class="content-block">
+                <img src="{{ url_for('static', filename='Record-your-voice.gif') }}" alt="Speech Therapy">
+                <h3>What is speech disorder?</h3>
+                <p>Speech sound disorders are an umbrella term referring to any difficulty or combination of difficulties with perception, motor production, 
+                    or phonological representation of speech sounds and speech segments including phonotactic rules governing permissible speech sound sequences in a language.</p>
+            </div>
+
+            <div class="content-block">
+                <img src="{{ url_for('static', filename='causes.gif') }}" alt="Speech Therapy">
+                <h3>What are its causes?</h3>
+                <p>Often, a speech sound disorder has no known cause. But some speech sound errors may be caused by: Brain injury. Thinking or development disability.
+                     Problems with hearing or hearing loss, such as past ear infections.</p>
+            </div>
+
+            <div class="content-block">
+                <img src="{{ url_for('static', filename='stat.gif') }}" alt="Speech Therapy">
+                <h3>Statistical analysis</h3>
+                <p>Around 11 to 12 million people are estimated to stutter in India. Stuttering is more common in children than in adults, with 5% of cases occurring in children compared to only 1% in the adult population. 
+                    The main causes of stuttering can be stress and pressure.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; TechTittans All rights reserved.</p>
+    </footer>
+</body>
+</html>

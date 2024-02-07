@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.3.2/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <title>Typing Statistics</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .charts-container {
+            display: flex;
+            flex-wrap: wrap; /* Allow charts to wrap to the next line if needed */
+            justify-content: space-between;
+        }
+        .chart-container {
+            flex-basis: calc(33.33% - 20px); /* Set width for each chart (33.33% - margin) */
+            margin-bottom: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+        }
+        .chart-title {
+            text-align: center;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        /* Button Styles */
+        .download-button {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .download-button a {
+            text-decoration: none;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            text-transform: uppercase;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            color: #fff;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        /* Textual Results Styles */
+        .textual-results {
+            text-align: center;
+        }
+        .result-label {
+            font-weight: bold;
+        }
+        .result-value {
+            font-size: 24px;
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Level {{ results.level }} Typing Test Results</h1>
+        <div class="textual-results">
+            <p class="result-label">Number of Correct Words:</p>
+            <p class="result-value">{{ results['Number of Correct Words'] }}</p>
+            <p class="result-label">Average Typing Speed:</p>
+            <p class="result-value">{{ '%.2f' | format(results['Average Typing Speed']) }} words per minute</p>
+
+            <p class="result-label">Accuracy:</p>
+            <p class="result-value">{{ results['Accuracy'] }}%</p>
+        </div>
+        <div class="charts-container">
+            <!-- Chart for Number of Correct Words -->
+            <div class="chart-container">
+                <p class="chart-title">Number of Correct Words</p>
+                <canvas id="correctWordsChart"></canvas>
+            </div>
+
+            <!-- Chart for Average Typing Speed -->
+            <div class="chart-container">
+                <p class="chart-title">Average Typing Speed (words per minute)</p>
+                <canvas id="typingSpeedChart"></canvas>
+            </div>
+
+            <!-- Chart for Accuracy -->
+            <div class="chart-container">
+                <p class="chart-title">Accuracy (%)</p>
+                <canvas id="accuracyChart"></canvas>
+            </div>
+
+            <!-- Chart for Pie Chart -->
+            <div class="chart-container">
+                <p class="chart-title">Overall Statistics</p>
+                <canvas id="pieChart"></canvas>
+            </div>
+        </div>
+        <div class="download-button">
+            <center>
+                <a href="/download-pdf-report" class="btn btn-primary" download>
+                    <button id="downloadPdfButton" class="btn btn-primary" onclick="downloadPDF()">Download PDF Report</button>
+
+                </a>
+            </center>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const results = {{ results | tojson }};
+            const labels = ['Number of Correct Words', 'Average Typing Speed', 'Accuracy'];
+            const dataValues = [results['Number of Correct Words'], results['Average Typing Speed'], results['Accuracy']];
+
+            // Create a chart for Number of Correct Words
+            new Chart(document.getElementById('correctWordsChart').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: [labels[0]],
+                    datasets: [{
+                        label: labels[0],
+                        data: [dataValues[0]],
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 10 // Set the maximum value for the y-axis to 10
+                        }
+                    }
+                }
+            });
+
+            // Create a chart for Average Typing Speed
+            new Chart(document.getElementById('typingSpeedChart').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: [labels[1]],
+                    datasets: [{
+                        label: labels[1],
+                        data: [dataValues[1]],
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Create a chart for Accuracy
+            new Chart(document.getElementById('accuracyChart').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: [labels[2]],
+                    datasets: [{
+                        label: labels[2],
+                        data: [dataValues[2] * 100], // Multiply by 100 to display values out of 100 percent
+                        backgroundColor: 'rgba(255, 206, 86, 0.2)',
+                        borderColor: 'rgba(255, 206, 86, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100 // Set the maximum value for the y-axis to 100
+                        }
+                    }
+                }
+            });
+
+            // Create a chart for Pie Chart
+            new Chart(document.getElementById('pieChart').getContext('2d'), {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: dataValues,
+                        backgroundColor: ['rgba(255, 99, 132, 0.5)', 'rgba(54, 162, 235, 0.5)', 'rgba(255, 206, 86, 0.5)'],
+                        borderColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)', 'rgba(255, 206, 86, 1)'],
+                        borderWidth: 1
+                    }]
+                }
+            });
+        });
+        function downloadPDF() {
+            const container = document.querySelector('.container'); // The element you want to capture
+            const downloadButton = document.getElementById('downloadPdfButton'); // Reference to the download button
+    
+            // Hide the button
+            downloadButton.style.visibility = 'hidden';
+    
+            // Capture the screenshot
+            html2canvas(container, { scale: 2 }).then((canvas) => {
+                const imgData = canvas.toDataURL('image/png');
+                const pdf = new jspdf.jsPDF({
+                    orientation: 'portrait',
+                    unit: 'px',
+                    format: [canvas.width, canvas.height]
+                });
+                pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+                pdf.save('typing_report.pdf');
+    
+                // Show the button again
+                downloadButton.style.visibility = 'visible';
+            });
+        }s
+        
+    </script>
+</body>
+</html>
+

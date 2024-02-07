@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Use Jinja2 templating to dynamically insert the level into the title -->
+    <title>Level {{ results.level }} Typing Test Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Level {{ results.level }} Typing Test Statistics</h1>
+        </header>
+        <main>
+            <button onclick="window.location.href='/charts'" class="btn">Show Results</button>
+        </main>
+    </div>
+</body>
+</html>
+
+

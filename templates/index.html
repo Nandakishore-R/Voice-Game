@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speaking Game</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <style>
+        /* Add your CSS styles here */
+        #custom-popup, #report-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border: 1px solid #ccc;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        #custom-popup h2, #report-modal h2 {
+            margin-bottom: 10px;
+        }
+
+        #custom-popup button, #report-modal button {
+            margin-top: 10px;
+        }
+
+        .full-screen-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent black background */
+            z-index: 2000; /* Ensure it's above other elements */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .message-content {
+            text-align: center;
+            color: white;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .close {
+            cursor: pointer;
+            float: right;
+            font-size: 1.5em;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content {
+            margin: 15% auto;
+            padding: 20px;
+            width: 80%;
+        }
+        .game-opening-screen {
+         
+          height: 100%; 
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          text-align: center;
+        }
+
+        h1 {
+          font-size: 4rem;
+          color: #ffffff;
+          margin-bottom: 20px;
+        }
+
+        button {
+          background-color: #f64f59;
+          color: #fff;
+          border: none;
+          border-radius: 5px;
+          padding: 10px 20px;
+          margin: 10px;
+          cursor: pointer;
+          font-size: 1.2rem;
+          transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+          background-color: #c44569;
+        }
+        body, html {
+            background: linear-gradient(to right, #ffa751, #ffe259); /* Gradient background */
+  height: 100%;
+  margin: 0;
+  font-family: 'Arial', sans-serif;
+}
+    </style>
+</head>
+<body class="container mt-5">
+    <div class="game-opening-screen" id="start-container">
+        <h1>Speaking Game</h1>
+        <button id="start-button">Start Game</button>
+        <!-- <button id="credits">Credits</button> -->
+      </div>
+    <!-- <div id="start-container" class="text-center">
+        <h1 class="mb-4">Word Typing Game</h1>
+        <button id="start-button" class="btn btn-primary">Start Game</button>
+    </div> -->
+    <!-- language container -->
+    <div id="language-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <select id="language-selection">
+                <option value="English">English</option>
+                <option value="Hindi">Hindi</option>
+            </select>
+            <button id="language-confirm" class="btn btn-primary">Confirm</button>
+        </div>
+    </div>
+
+    <!-- word container -->
+    <div id="word-type-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <select id="word-type-selection">
+                <!-- Options will be dynamically loaded based on language -->
+            </select>
+            <button id="word-type-confirm" class="btn btn-primary">Start Game</button>
+        </div>
+    </div>
+
+
+    <div id="game-container" style="display: none;">
+        <h1 class="mb-4">Speaking Game</h1>
+        
+
+        <p id="stage-display" class="h4"></p>
+        <p id="word-display" class="h2"></p>
+        <p id="timer-display"></p>
+        <input type="text" id="user-input" class="form-control mb-3" placeholder="Type the word">
+        <button id="record-button" class="btn btn-warning">Click to Record</button>
+        <button id="repeat-word-button" class="btn btn-info">Repeat Word</button>
+        <button id="skip-question-button" class="btn btn-secondary">Skip Question</button>
+        
+        <p id="score-display">Score: 0</p>
+    </div>
+    <!-- Stage completion screen -->
+    <div id="stage-completed-container" style="display: none;">
+        <h2>Congratulations!</h2>
+        <p>You've completed the current stage.</p> 
+        <button id="report-button1" class="btn btn-primary">View Report</button>
+        <button id="next-stage-button" class="btn btn-primary">Next Stage</button>
+    </div>
+
+    <!-- Custom Popup -->
+    <div id="custom-popup">
+        <h2></h2>
+        <p></p>
+        <button id="try-again-button" class="btn btn-success" >Try Again</button>
+        <button id="next-word-button" class="btn btn-primary" style="display: none;">Next Word</button>
+        <button id="skip-button" class="btn btn-danger" >Skip</button>        
+    </div>
+    <div id="end-stage-message" class="full-screen-popup" style="display: none;">
+        <div class="message-content">
+            <h1 id="end-stage-title"></h1>
+            <p id="game-completed-message"></p>
+            <div id="results">
+                <div id="correct-words">
+                    <h3>Correct Words</h3>
+                    <ul id="list-correct-words"></ul>
+                </div>
+                <div id="incorrect-words">
+                    <h3>Incorrect Words</h3>
+                    <ul id="list-incorrect-words"></ul>
+                </div>
+            </div>
+            <button id="play-again-button" class="btn btn-primary" style="display: none;">Play Again</button>
+            <button id="next-level-button" class="btn btn-primary" style="display: none;">Next Level</button>
+            <button id="report-button2" class="btn btn-primary">View Report</button>
+            <button id="restart-game-button" class="btn btn-danger" style="display: none;">Restart Game</button>
+        </div>
+    </div>
+
+    <script>
+
+    var wordAttempts = {}; // Array to store word attempts
+
+        $(document).ready(function() {
+
+    var score = 0; // Initialize score variable
+    var currentWord = ""; // Global variable to store the current word
+    var currentStage = "";
+    var l='';
+    var currentLevel = 1;
+    var wordChances = {};
+    var questionsAnswered = 0; // Track the number of questions answered
+    var correctAnswers = 0;
+    var timePerLevel = {
+        1: 60,
+        2: 60,
+        3: 60
+        // Add more levels as needed
+    };
+    var correctAnswersNeeded = {
+        1: 4,
+        2: 4,
+        3: 4
+        // Add more levels as needed
+    };
+    var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
+    var correctWords = [];
+    var incorrectWords = [];
+    var recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.lang = 'en-IN';
+    recognition.interimResults = false;
+    const initialTime = 60;
+    var timer;
+    var timeLeft = 60; // 60 seconds for each word
+    var timerStarted = false; // Flag to track if timer has started
+    
+
+    //json
+
+    function recordWordAttempt(word, timeTaken, status) {
+    // Check if the word exists in wordAttempts, if not, initialize it as an empty object
+    if (!wordAttempts[word]) {
+        wordAttempts[word] = {
+            attempts: [],
+            chancesUsed: 0
+        };
+    }
+    
+    // Add the attempt data to the word's attempts array
+    wordAttempts[word].attempts.push({
+        Slno: wordAttempts[word].attempts.length + 1,
+        level: currentLevel,
+        TimeTaken: timeTaken,
+        Status: status
+    });
+    
+    if (status !== 'Correct') {
+        wordAttempts[word].chancesUsed++;
+    }
+    console.log("Attempt recorded for word:", word, "Status:", status); // Debugging log
+}
+
+    // Function to export word attempts to JSON
+    function exportWordAttemptsToJSON() {
+        return JSON.stringify(wordAttempts,null,2);
+    }
+
+    // Function to print word attempts in JSON format
+    function printWordAttemptsJSON() {
+        console.log(exportWordAttemptsToJSON());
+    }
+
+
+
+
+
+
+    function startTimer() {
+        var timeLeft = timePerLevel[currentLevel]; // Set time based on the current level
+        if (!timerStarted) {
+            timer = setInterval(function() {
+                timeLeft--;
+                $('#timer-display').text("Time Left: " + timeLeft + "s");
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    showCustomPopup('TIME OUT', 'Try again', 'text-success');
+
+
+                }
+            }, 1000);
+            timerStarted = true;
+        }
+    }
+
+    function resetTimer() {
+        var timeLeft = timePerLevel[currentLevel]; // Reset time based on the current level
+        clearInterval(timer);
+        $('#timer-display').text("Time Left: " + timeLeft + "s");
+        timerStarted = false;
+    }
+
+    function stopTimer() {
+        clearInterval(timer);
+        timerStarted = false; // Only stop the timer, don't reset display
+    }
+
+    
+
+    $("#skip-question-button").click(function() {
+        skipQuestion();
+    });
+
+    function skipQuestion() {
+$.post('/app/skip_question', function() {
+        questionsAnswered++;
+        incorrectWords.push(currentWord);
+        recordWordAttempt(currentWord, 'N/A', 'Skipped');
+        stopTimer();
+        if (questionsAnswered >= 8) {
+            endStage();
+        } else {
+            startGame(); // Load the next question
+        }
+});
+    }
+
+    function startGame() {
+        var timeLeft = timePerLevel[currentLevel];
+        var selectedLanguage = $('#language-selection').val();
+        var selectedWordType = $('#word-type-selection').val();
+        $('#timer-display').text("Time Left: " + timeLeft + "s");
+        $('#start-container').hide();
+        $('#game-container').show();
+        var l=selectedLanguage;
+        if (selectedLanguage === 'English') {
+            recognition.lang = 'en-IN';
+    } else if (selectedLanguage === 'Hindi') {
+            recognition.lang = 'hi-IN';
+    }
+
+        $.post('/app/start_game',{language: selectedLanguage, wordType: selectedWordType}, function(data) {
+            currentWord = data.word;
+            currentStage = data.stage;
+            $('#stage-display').text(currentStage);
+            $('#word-display').text(currentWord);
+            speakWord(currentWord, selectedLanguage);
+            $('#submit-button').prop('disabled', false);
+        });
+        resetTimer();
+    }
+            function endStage() {
+// Send a POST request to the '/end_stage' endpoint
+    $.post('/app/end_stage', function(response) {
+        var message = response.message;
+        var game_over = response.game_over;
+        var eligibleForNextLevel = response.eligible_for_next_level;
+        var currentLevel = response.current_level;
+
+        // Update UI based on the response
+        if (eligibleForNextLevel)
+        {
+            if (game_over) {
+                $('#restart-game-button').show();
+                $('#report-button2').show();
+                $('#end-stage-title').text("Congratulations! You've completed the game.");
+                $('#next-level-button').hide();
+            }
+            else
+            {
+                $('#next-level-button').show();
+                $('#end-stage-title').text("Congratulations! You've reached the next level.");
+            }
+        }
+        else 
+        {
+            $('#next-level-button').hide();
+            $('#report-button2').hide();
+            $('#restart-game-button').show();
+            $('#end-stage-title').text("Try again! You need at least " + correctAnswersNeeded[currentLevel] + " correct answers to proceed.");
+        }
+
+        // Clear and update the lists of correct and incorrect words
+                    $('#list-correct-words').empty();
+                    $('#list-incorrect-words').empty();
+
+                    correctWords.forEach(function(word) {
+                        $('#list-correct-words').append('<li>' + word + '</li>');
+                    });
+                    incorrectWords.forEach(function(word) {
+                        $('#list-incorrect-words').append('<li>' + word + '</li>');
+                    });
+
+        // Display the end-stage message and reset counters
+                    $('#end-stage-message').fadeIn();
+                    correctAnswers = 0;
+                    questionsAnswered = 0;
+                      printWordAttemptsJSON(); // Optional: Print the word attempts JSON for debugging
+                    stopTimer(); // Stop the timer
+                    correctWords = [];
+                    incorrectWords = [];
+    });
+            }
+            
+            function restartGame() {
+                score = 0;
+                correctAnswers = 0;
+                questionsAnswered = 0;
+                currentStage = 1;
+                currentLevel = 1;
+                correctWords = [];
+                incorrectWords = [];
+                // Reset UI elements
+                $('#score-display').text('Score: 0');
+                $('#user-input').val('');
+                $('#end-stage-message').fadeOut();
+                $('#game-container').show();
+                $('#start-container').show();
+                $('#list-correct-words').empty();
+                $('#list-incorrect-words').empty();
+                $.post('/app/restart_game', function() {
+                    startGame();
+                });
+                // Start the game again
+                startGame();
+            }
+
+
+            function startNextQuestion() {
+                stopTimer(); // Stop and reset the timer
+                questionsAnswered++;
+                if (questionsAnswered >= 8) {
+                    endStage();
+                } else {
+                    startGame(); // Start the next question
+                }
+            }
+           
+            function showCustomPopup(title, message, iconClass) {
+                $('#custom-popup').find('h2').text(title);
+                $('#custom-popup').find('p').text(message);
+                $('#custom-popup').find('.custom-icon').addClass(iconClass);
+
+
+                $('#custom-popup').fadeIn();
+          
+                
+
+                /*setTimeout(function() {
+                    $('#custom-popup').fadeOut();
+                }, 1000);*/
+            }
+
+            //$('#word-type-confirm').click(startGame);
+
+            $('#start-button').click(function() {
+            $('#language-modal').show();
+
+        });
+
+        $('#language-confirm').click(function() {
+            var language = $('#language-selection').val();
+            loadWordTypes(language);
+            $('#language-modal').hide();
+            $('#word-type-modal').show();
+        });
+
+        $('#word-type-confirm').click(function() {
+            var wordType = $('#word-type-selection').val();
+            startGame();
+            // TODO: Start the game with the selected language and word type
+            $('#word-type-modal').hide();
+        });
+
+        function loadWordTypes(language) {
+            var wordTypes = language === 'English' ? [...EnglishWordTypes] : [...HindiWordTypes];
+            $('#word-type-selection').empty();
+            wordTypes.forEach(function(type) {
+                $('#word-type-selection').append(new Option(type, type));
+            });
+        }
+
+        
+            
+            function updateScore() {
+             $('#score-display').text('Score: ' + score);
+            }
+
+            function speakWord(word, language) {
+                var synth = window.speechSynthesis;
+
+            var setUtterance = function() {
+                var utterance = new SpeechSynthesisUtterance(word);
+var voices = synth.getVoices();
+
+                // Select voice based on language
+                var selectedVoice = voices.find(function(voice) {
+                    return language === 'Hindi' ? voice.lang === 'hi-IN' : voice.lang.startsWith('en-');
+                });
+
+                if (selectedVoice) {
+                    utterance.voice = selectedVoice;
+                } else {
+                    console.error('No voice found for the selected language');
+                    return;
+                }
+
+                synth.speak(utterance);
+            };
+
+            if (synth.getVoices().length === 0) {
+                synth.onvoiceschanged = setUtterance;
+            } else {
+                setUtterance();
+            }
+        }
+
+
+
+
+recognition.onresult = function(event) {
+    var endTime = new Date().getTime(); // Record the end time in milliseconds
+    var timeTaken = Math.round((endTime - startTime) / 1000); // Calculate time taken in seconds
+
+    var speechToText = event.results[0][0].transcript;
+    speechToText = speechToText.replace(/\.$/, '').toLowerCase();
+    $('#user-input').val(speechToText);
+
+    if (speechToText === currentWord.toLowerCase()) {
+$.post('/app/correct_update', function(response) {
+        $('#next-word-button').show();
+        showCustomPopup('Correct!', 'Well done.', 'text-success');
+        if (!wordChances[currentWord]) {
+            score += 10;
+            correctAnswers++;
+        }
+        correctWords.push(currentWord);
+        updateScore();
+        recordWordAttempt(currentWord, timeTaken, 'Correct'); // Update with correct time taken
+        stopTimer();
+    });
+    }
+    
+    else {
+        $('#next-word-button').hide();
+        $.ajax({
+        url: '/app/compare_words',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({ player_word: speechToText, correct_word: currentWord.toLowerCase() }),
+        success: function(response) {
+            if (!wordChances[currentWord]) {
+                wordChances[currentWord] = 1;
+            } else {
+                 wordChances[currentWord]++;
+            }
+            var similarityMessage = "Similarity: " + (response.similarity_ratio * 100).toFixed(2) + "%";
+            if(response.similarity_ratio > .8) {
+                showCustomPopup('Incorrect', 'You are almost there. ' + similarityMessage, 'text-danger');
+            } else if(response.similarity_ratio > .5) {
+                showCustomPopup('Incorrect', 'You are halfway there. ' + similarityMessage, 'text-danger');
+            } else {
+                showCustomPopup('Incorrect', 'OOPS!! Seems like you need to improve! ' + similarityMessage, 'text-danger');
+            }
+            
+            recordWordAttempt(currentWord, timeTaken, 'Incorrect'); // Update with correct time taken
+            stopTimer();  
+        },
+        error: function() {
+            console.error("Error in word comparison");
+        }
+            });
+       
+    }
+    printWordAttemptsJSON(); // Debug print after each attempt
+};
+
+// Add click event handlers for the Try Again and Next Word buttons in the custom pop-up
+$('#try-again-button').click(function() {
+    if (wordChances[currentWord] <= 1) {
+        $('#custom-popup').fadeOut();
+        resetTimer()
+    } else {
+        // Handle additional tries without point incrementation
+        $('#custom-popup').fadeOut();
+        resetTimer()
+    }
+});
+
+$('#skip-button').click(function() {
+    skipQuestion();
+    $('#custom-popup').fadeOut();
+});
+
+
+$('#next-word-button').click(function() {
+    startNextQuestion();
+    $('#custom-popup').fadeOut();
+});
+
+$("#record-button").click(function() {
+    startTimer();
+    startTime = new Date().getTime(); // Record the start time in milliseconds
+    recognition.start();
+});
+
+    $("#repeat-word-button").click(function() {
+        if (currentWord) {
+            speakWord(currentWord,l);
+        }
+    });
+
+    
+
+    $("#next-stage-button").click(function() {
+        startGame();
+    });
+
+    $('#restart-button').click(function() {
+        restartGame();
+    });
+
+    $('#next-level-button').click(function() {
+        currentLevel++; // Increment the level
+        $('#end-stage-message').fadeOut();
+        startGame(); // Start the next level
+    });
+
+    $('#restart-game-button').click(function() {
+        restartGame();
+    });
+
+    $('#play-again-button').click(function() {
+        // Reset the game to start from the beginning
+        currentLevel = 1;
+        restartGame(); // Call your restartGame function
+        $('#end-stage-message').fadeOut();
+        $('#game-completed-message').text('');
+        $('#play-again-button').hide();
+    });
+
+    
+$('#report-button1').click(function() {
+    console.log('Report button clicked'); 
+    var wordAttemptsJSON = exportWordAttemptsToJSON();
+    var popupWindow = window.open('/calculate/', 'ReportWindow', 'width=600,height=400');
+    
+    $.ajax({
+        url: '/calculate/',
+        type: 'POST',
+        contentType: 'application/json',
+        data: wordAttemptsJSON,
+        success: function(response) {
+            console.log(response.message);
+
+        },
+        error: function(xhr, status, error) {
+            console.error("Error processing report:", xhr.responseText);
+            // Handle error
+        }
+         });
+    
+        });
+
+        $('#report-button2').click(function() {
+    console.log('Report button clicked'); 
+    var wordAttemptsJSON = exportWordAttemptsToJSON();
+    var popupWindow = window.open('/calculate/', 'ReportWindow', 'width=600,height=400');
+    
+    $.ajax({
+        url: '/calculate/',
+        type: 'POST',
+        contentType: 'application/json',
+        data: wordAttemptsJSON,
+        success: function(response) {
+            console.log(response.message);
+
+        },
+        error: function(xhr, status, error) {
+            console.error("Error processing report:", xhr.responseText);
+            // Handle error
+        }
+         });
+    
+        });
+
+
+    });
+
+
+    var EnglishWordTypes = ['L words', 'R words','Z words','C words','G words','F words','V words','Sh words','Ch words','Th words','T words','D words','P words','B words','S words' /* other word types */];
+    var HindiWordTypes = ['क ', 'आ', /* other word types */];
+    </script>
+</body>
+</html>

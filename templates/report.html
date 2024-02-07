@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Level {{ results.level }} Typing Test Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<style>
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f4f4f4;
+        color: #333;
+        line-height: 1.6;
+    }
+    
+    .container {
+        width: 80%;
+        margin: auto;
+        overflow: hidden;
+    }
+    
+    header h1 {
+        text-align: center;
+        color: #333;
+    }
+    
+    .btn {
+        display: block;
+        width: 100%;
+        padding: 10px;
+        border: none;
+        background-color: #5cb85c;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+        text-align: center;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+    }
+    
+    .btn:hover {
+        background-color: #4cae4c;
+    }
+    
+    @media (max-width: 700px) {
+        .container {
+            width: 95%;
+        }
+    }
+</style>
+<body>
+    <div class="container">
+        <header>
+            <h1>Level {{ results.level }} Typing Test Statistics</h1>
+        </header>
+        <main>
+            <button onclick="window.location.href='/charts'" class="btn">Show Results</button>
+        </main>
+    </div>
+</body>
+</html>
+
+
+
